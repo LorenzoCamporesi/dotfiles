@@ -1,0 +1,61 @@
+# Docker
+function ssh-docker() {
+   docker exec -it "$@" bash
+}
+
+# Create a new directory and enter it
+function mkd() {
+   mkdir -p "$@" && cd "$@"
+}
+
+# Start a PHP server from a directory, optionally specifying the port
+# (Requires PHP 5.4.0+.)
+function phpserver() {
+	local port="${1:-4000}"
+	local ip=$(ipconfig getifaddr en0)
+	sleep 2 && open "http://${ip}:${port}/" &
+	php -S "${ip}:${port}"
+}
+
+archive () {
+   zip -r "$1".zip -i "$1" ;
+}
+
+function weather() {
+   city="$1"
+
+   if [ -z "$city" ]; then
+      city="Parma"
+   fi
+
+   eval "curl http://wttr.in/${city}"
+}
+
+# Scrape a single webpage with all assets
+function scrapeUrl() {
+    wget --adjust-extension --convert-links --page-requisites --span-hosts --no-host-directories "$1"
+}
+
+#  Commit everything
+function commit() {
+  commitMessage="$1"
+
+  if [ "$commitMessage" = "" ]; then
+     commitMessage="WIP"
+  fi
+
+  git add .
+  eval "git commit -a -m '${commitMessage}'"
+}
+
+function scheduler () {
+    while :; do
+        php artisan schedule:run
+	echo "Sleeping 60 seconds..."
+        sleep 60
+    done
+}
+
+function silent() {
+   "$@" >& /dev/null
+}
